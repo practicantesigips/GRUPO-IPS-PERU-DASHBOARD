@@ -7,19 +7,41 @@
   <style>
     body { 
       font-family: Arial, sans-serif; 
-      background: #f4f4f4; 
+      margin: 0;
+      height: 100vh; 
       display: flex; 
       justify-content: center; 
       align-items: center; 
-      height: 100vh; 
-      margin: 0; 
-      /* Fondo con logo repetido */
-      background-image: url("https://grupoipsmexico.com/assets/images/logo.png");
-      background-size: 120px;   /* tamaño de cada logo */
-      background-repeat: repeat; 
-      background-position: center;
-      opacity: 0.95;  /* suaviza el fondo */
+      background-color: #f4f4f4; 
+      position: relative;
+      overflow: hidden;
     }
+
+    /* Patrón de cuadrados */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 120px 120px; /* tamaño de los cuadros */
+      z-index: 0;
+    }
+
+    /* Logos en mosaico */
+    body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("https://grupoipsmexico.com/assets/images/logo.png");
+      background-size: 120px 120px;
+      background-repeat: repeat;
+      background-position: 60px 60px; /* desplazado para que quede intercalado */
+      opacity: 0.07; /* efecto marca de agua */
+      z-index: 0;
+    }
+
     .login-box { 
       background: rgba(255,255,255,0.9); 
       padding: 30px; 
@@ -27,7 +49,9 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.25); 
       text-align: center; 
       width: 320px; 
-      backdrop-filter: blur(4px); /* efecto vidrio */
+      backdrop-filter: blur(4px); 
+      z-index: 1;
+      position: relative;
     }
     .login-box h2 {
       margin-bottom: 20px;
@@ -122,4 +146,3 @@
 
 </body>
 </html>
-
