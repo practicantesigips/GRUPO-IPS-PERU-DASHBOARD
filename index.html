@@ -7,20 +7,31 @@
   <style>
     body { 
       font-family: Arial, sans-serif; 
-      background-color: #f4f4f4; 
+      background: #f4f4f4; 
       display: flex; 
       justify-content: center; 
       align-items: center; 
       height: 100vh; 
       margin: 0; 
+      /* Fondo con logo repetido */
+      background-image: url("https://grupoipsmexico.com/assets/images/logo.png");
+      background-size: 120px;   /* tamaño de cada logo */
+      background-repeat: repeat; 
+      background-position: center;
+      opacity: 0.95;  /* suaviza el fondo */
     }
     .login-box { 
-      background: white; 
+      background: rgba(255,255,255,0.9); 
       padding: 30px; 
-      border-radius: 8px; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+      border-radius: 12px; 
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25); 
       text-align: center; 
       width: 320px; 
+      backdrop-filter: blur(4px); /* efecto vidrio */
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #0078d4;
     }
     input { 
       width: 90%; 
@@ -38,6 +49,7 @@
       border-radius: 4px; 
       cursor: pointer; 
       font-size: 16px; 
+      transition: 0.3s;
     }
     button:hover { 
       background-color: #005a9e; 
@@ -96,10 +108,8 @@
 
       const user = users.find(u => u.ruc === rucInput && u.password === passInput);
       if (user) {
-        // Guardar sesión
         sessionStorage.setItem("loggedIn", "true");
         sessionStorage.setItem("dashboardLink", user.link);
-        // Redirigir a la página protegida
         window.location.href = "dashboard.html";
         errorDiv.textContent = '';
       } else {
@@ -112,3 +122,4 @@
 
 </body>
 </html>
+
