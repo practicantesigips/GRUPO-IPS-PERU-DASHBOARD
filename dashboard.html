@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Power BI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #0078d4;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 50px);
+      border: none;
+    }
+    button {
+      padding: 8px 15px;
+      background-color: #ff4d4d;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Dashboard</h2>
+    <button onclick="logout()">Cerrar Sesión</button>
+  </header>
+  <iframe id="dashboardFrame"></iframe>
+
+  <script>
+    // Revisar sesión
+    if (sessionStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "index.html"; // si no está logueado, volver al login
+    } else {
+      // Cargar link desde la sesión
+      const link = sessionStorage.getItem("dashboardLink");
+      document.getElementById("dashboardFrame").src = link;
+    }
+
+    function logout() {
+      sessionStorage.removeItem("loggedIn");
+      sessionStorage.removeItem("dashboardLink");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
