@@ -17,7 +17,7 @@
       height: 100%;
       overflow: hidden;
       font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #f5f7fa;
+      background-color: #ffffff; /* Blanco para los costados */
       color: #333;
     }
 
@@ -29,8 +29,8 @@
       justify-content: space-between;
       align-items: center;
       height: var(--header-height);
-      box-sizing: border-box;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      position: relative;
       z-index: 10;
     }
 
@@ -43,6 +43,7 @@
     header h2 {
       margin: 0;
       font-size: 18px;
+      letter-spacing: 0.5px;
     }
 
     img.logo {
@@ -66,32 +67,23 @@
     }
 
     main {
-      position: relative;
-      width: 100%;
-      height: calc(100vh - var(--header-height));
-      overflow: hidden;
-      background-color: #000;
-    }
-
-    iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      border: none;
-      overflow: hidden;
-      background: #000;
-      transition: height 0.3s ease;
-    }
-
-    .no-dashboard {
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 100%;
       height: calc(100vh - var(--header-height));
-      color: #666;
-      font-size: 18px;
-      text-align: center;
+      background-color: #ffffff;
+      overflow: hidden;
+    }
+
+    /* Dashboard centrado, sin scroll */
+    iframe {
+      width: 1600px;
+      height: 911px;
+      border: none;
+      display: block;
+      background: #000;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
 
     .loader {
@@ -112,8 +104,19 @@
       0% { transform: translate(-50%, -50%) rotate(0deg); }
       100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
+
+    .no-dashboard {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - var(--header-height));
+      color: #666;
+      font-size: 18px;
+      text-align: center;
+    }
   </style>
 </head>
+
 <body>
   <header>
     <div class="header-left">
@@ -132,25 +135,9 @@
   </main>
 
   <script>
-    const HEADER_HEIGHT = 50;
     const iframe = document.getElementById("dashboardFrame");
     const msg = document.getElementById("noDashboardMsg");
     const loader = document.getElementById("loader");
-
-    // Ajusta dinámicamente según tipo de dashboard
-    function ajustarAlturaIframe(extra = 0) {
-      const alturaBase = window.innerHeight - HEADER_HEIGHT;
-      const link = sessionStorage.getItem("dashboardLink") || "";
-
-      if (link.includes("lookerstudio.google.com")) {
-        // Modo 16:9 base (1600x911) con ajuste dinámico
-        iframe.style.width = "100%";
-        iframe.style.height = (alturaBase + extra) + "px";
-      } else {
-        iframe.style.width = "100%";
-        iframe.style.height = alturaBase + "px";
-      }
-    }
 
     function inicializarDashboard() {
       if (sessionStorage.getItem("loggedIn") !== "true") {
@@ -165,19 +152,10 @@
         iframe.style.display = "block";
         msg.style.display = "none";
         loader.style.display = "block";
-        iframe.setAttribute("scrolling", "no");
 
         iframe.onload = () => {
           loader.style.display = "none";
-          ajustarAlturaIframe();
-
-          // Ajuste progresivo en caso de redibujo de Looker
-          setTimeout(() => ajustarAlturaIframe(10), 500);
-          setTimeout(() => ajustarAlturaIframe(15), 1500);
-          setTimeout(() => ajustarAlturaIframe(18), 3000);
         };
-
-        window.addEventListener("resize", () => ajustarAlturaIframe(15));
 
       } else {
         iframe.style.display = "none";
