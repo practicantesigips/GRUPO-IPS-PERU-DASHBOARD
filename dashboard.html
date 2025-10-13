@@ -5,25 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DASHBOARD - GRUPO IPS PERÚ</title>
   <style>
+    /* ===== RESETEO GENERAL ===== */
+    * {
+      box-sizing: border-box;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
+      width: 100%;
+      overflow: hidden; /* 🚫 elimina cualquier scroll global */
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
     }
 
+    /* ===== HEADER SUPERIOR ===== */
     header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
       background: #0078d4;
       color: white;
-      padding: 5px 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 50px;
-      box-sizing: border-box;
-      flex-shrink: 0;
+      padding: 5px 15px;
+      z-index: 10;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
@@ -33,14 +43,14 @@
       gap: 10px;
     }
 
-    header h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
     img.logo {
       height: 35px;
       object-fit: contain;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 18px;
     }
 
     button {
@@ -58,42 +68,42 @@
       background-color: #cc0000;
     }
 
-    /* ===== IFRAME general ===== */
+    /* ===== CONTENEDOR DEL IFRAME ===== */
     iframe {
       position: absolute;
-      top: 50px; /* debajo del header */
+      top: 50px; /* justo debajo del header */
       left: 0;
-      width: 100vw;
-      height: calc(100vh - 50px);
+      right: 0;
+      bottom: 0; /* ocupa hasta el borde inferior exacto */
+      width: 100%;
+      height: calc(100% - 50px);
       border: none;
       overflow: hidden;
-      display: none;
-    }
-
-    /* ===== Ajuste especial Looker Studio ===== */
-    iframe[src*="lookerstudio.google.com"] {
       display: block;
-      width: 100vw; /* ocupa todo el ancho */
-      height: calc(100vh - 50px);
-      border: none;
-      overflow: hidden;
       background: #000;
     }
 
-    /* ===== Ajuste Power BI ===== */
-    iframe[src*="app.powerbi.com"] {
-      display: block;
-      width: 100vw;
-      height: calc(100vh - 50px);
-      border: none;
+    /* ===== Looker Studio: sin barras internas ===== */
+    iframe[src*="lookerstudio.google.com"] {
+      scrollbar-width: none;
+    }
+    iframe[src*="lookerstudio.google.com"]::-webkit-scrollbar {
+      display: none;
     }
 
-    /* Mensaje por si no hay enlace */
+    /* ===== Power BI: sin barras internas ===== */
+    iframe[src*="app.powerbi.com"] {
+      scrollbar-width: none;
+    }
+    iframe[src*="app.powerbi.com"]::-webkit-scrollbar {
+      display: none;
+    }
+
     .no-dashboard {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: calc(100vh - 50px);
+      height: 100%;
       color: #666;
       font-size: 18px;
     }
@@ -109,11 +119,13 @@
   </header>
 
   <iframe id="dashboardFrame" scrolling="no"></iframe>
+
   <div id="noDashboardMsg" class="no-dashboard" style="display:none;">
     No se ha cargado ningún dashboard.
   </div>
 
   <script>
+    // Verificación de sesión
     if (sessionStorage.getItem("loggedIn") !== "true") {
       window.location.href = "index.html";
     } else {
@@ -125,19 +137,7 @@
         iframe.src = link;
         iframe.style.display = "block";
         msg.style.display = "none";
-
-        // Configuración dinámica
-        if (link.includes("lookerstudio.google.com")) {
-          iframe.style.width = "100vw";
-          iframe.style.height = "calc(100vh - 50px)";
-          iframe.setAttribute("scrolling", "no");
-        } else if (link.includes("app.powerbi.com")) {
-          iframe.style.width = "100vw";
-          iframe.style.height = "calc(100vh - 50px)";
-        } else {
-          iframe.style.width = "100%";
-          iframe.style.height = "calc(100% - 50px)";
-        }
+        iframe.setAttribute("scrolling", "no");
       } else {
         iframe.style.display = "none";
         msg.style.display = "flex";
