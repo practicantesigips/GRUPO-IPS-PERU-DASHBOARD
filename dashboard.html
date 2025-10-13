@@ -30,10 +30,8 @@
       align-items: center;
       height: var(--header-height);
       box-sizing: border-box;
-      flex-shrink: 0;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
       z-index: 10;
-      position: relative;
     }
 
     .header-left {
@@ -45,7 +43,6 @@
     header h2 {
       margin: 0;
       font-size: 18px;
-      letter-spacing: 0.5px;
     }
 
     img.logo {
@@ -117,7 +114,6 @@
     }
   </style>
 </head>
-
 <body>
   <header>
     <div class="header-left">
@@ -141,14 +137,17 @@
     const msg = document.getElementById("noDashboardMsg");
     const loader = document.getElementById("loader");
 
-    function ajustarAlturaIframe() {
+    // Ajusta dinámicamente según tipo de dashboard
+    function ajustarAlturaIframe(extra = 0) {
       const alturaBase = window.innerHeight - HEADER_HEIGHT;
       const link = sessionStorage.getItem("dashboardLink") || "";
-      
-      // 🔹 Ajuste especial para Looker Studio (para evitar scroll al mostrar lista lateral)
+
       if (link.includes("lookerstudio.google.com")) {
-        iframe.style.height = (alturaBase + 15) + "px"; // agrega un margen de compensación
+        // Modo 16:9 base (1600x911) con ajuste dinámico
+        iframe.style.width = "100%";
+        iframe.style.height = (alturaBase + extra) + "px";
       } else {
+        iframe.style.width = "100%";
         iframe.style.height = alturaBase + "px";
       }
     }
@@ -171,12 +170,14 @@
         iframe.onload = () => {
           loader.style.display = "none";
           ajustarAlturaIframe();
+
+          // Ajuste progresivo en caso de redibujo de Looker
+          setTimeout(() => ajustarAlturaIframe(10), 500);
+          setTimeout(() => ajustarAlturaIframe(15), 1500);
+          setTimeout(() => ajustarAlturaIframe(18), 3000);
         };
 
-        window.addEventListener("resize", ajustarAlturaIframe);
-
-        // Ajustes progresivos en caso de re-render del Looker
-        [500, 1500, 3000].forEach(t => setTimeout(ajustarAlturaIframe, t));
+        window.addEventListener("resize", () => ajustarAlturaIframe(15));
 
       } else {
         iframe.style.display = "none";
