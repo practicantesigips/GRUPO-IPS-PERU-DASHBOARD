@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DASHBOARD - GRUPO IPS PERÚ</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* 🚫 Evita scroll en toda la página */
       font-family: Arial, sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
+
     header {
       background: #0078d4;
       color: white;
@@ -21,21 +22,30 @@
       align-items: center;
       height: 50px;
       box-sizing: border-box;
+      flex-shrink: 0;
     }
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     header h2 {
       margin: 0;
       font-size: 18px;
     }
+
     iframe {
-      flex: 1;
+      position: absolute;
+      top: 50px; /* altura del header */
+      left: 0;
       width: 100%;
+      height: calc(100% - 50px);
       border: none;
+      overflow: hidden; /* 🚫 Evita scroll dentro del iframe */
     }
+
     button {
       padding: 6px 12px;
       background-color: #ff4d4d;
@@ -45,9 +55,11 @@
       cursor: pointer;
       font-size: 14px;
     }
+
     button:hover {
       background-color: #cc0000;
     }
+
     img.logo {
       height: 35px;
       object-fit: contain;
@@ -63,16 +75,22 @@
     <button onclick="logout()">Cerrar Sesión</button>
   </header>
 
-  <iframe id="dashboardFrame"></iframe>
+  <iframe id="dashboardFrame" scrolling="no"></iframe>
 
   <script>
-    // Revisar sesión
+    // Revisión de sesión
     if (sessionStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "index.html"; // si no está logueado, volver al login
+      window.location.href = "index.html"; // Redirige si no hay sesión activa
     } else {
-      // Cargar link desde la sesión
+      // Cargar el enlace del dashboard desde la sesión
       const link = sessionStorage.getItem("dashboardLink");
-      document.getElementById("dashboardFrame").src = link;
+      const iframe = document.getElementById("dashboardFrame");
+
+      if (link) {
+        iframe.src = link;
+      } else {
+        iframe.src = "about:blank";
+      }
     }
 
     function logout() {
