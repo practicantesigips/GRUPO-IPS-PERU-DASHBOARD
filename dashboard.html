@@ -9,8 +9,9 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* 🚫 Evita scroll en toda la página */
+      overflow: hidden; /* 🚫 Sin scroll en toda la página */
       font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
     }
 
     header {
@@ -23,6 +24,7 @@
       height: 50px;
       box-sizing: border-box;
       flex-shrink: 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .header-left {
@@ -36,14 +38,9 @@
       font-size: 18px;
     }
 
-    iframe {
-      position: absolute;
-      top: 50px; /* altura del header */
-      left: 0;
-      width: 100%;
-      height: calc(100% - 50px);
-      border: none;
-      overflow: hidden; /* 🚫 Evita scroll dentro del iframe */
+    img.logo {
+      height: 35px;
+      object-fit: contain;
     }
 
     button {
@@ -54,15 +51,46 @@
       color: white;
       cursor: pointer;
       font-size: 14px;
+      transition: background 0.2s;
     }
 
     button:hover {
       background-color: #cc0000;
     }
 
-    img.logo {
-      height: 35px;
-      object-fit: contain;
+    /* IFRAME base */
+    iframe {
+      position: absolute;
+      top: 50px; /* debajo del header */
+      left: 0;
+      width: 100%;
+      height: calc(100% - 50px);
+      border: none;
+      overflow: hidden;
+    }
+
+    /* Ajuste especial para Looker Studio */
+    iframe[src*="lookerstudio.google.com"] {
+      width: 100vw;
+      height: calc(100vh - 50px);
+      transform: scale(1);
+      transform-origin: top left;
+    }
+
+    /* Ajuste especial para Power BI */
+    iframe[src*="app.powerbi.com"] {
+      width: 100vw;
+      height: calc(100vh - 50px);
+    }
+
+    /* Mensaje por si no hay enlace */
+    .no-dashboard {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 50px);
+      color: #666;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -76,20 +104,39 @@
   </header>
 
   <iframe id="dashboardFrame" scrolling="no"></iframe>
+  <div id="noDashboardMsg" class="no-dashboard" style="display:none;">
+    No se ha cargado ningún dashboard.
+  </div>
 
   <script>
-    // Revisión de sesión
+    // Verificación de sesión
     if (sessionStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "index.html"; // Redirige si no hay sesión activa
+      window.location.href = "index.html";
     } else {
-      // Cargar el enlace del dashboard desde la sesión
       const link = sessionStorage.getItem("dashboardLink");
       const iframe = document.getElementById("dashboardFrame");
+      const msg = document.getElementById("noDashboardMsg");
 
       if (link) {
         iframe.src = link;
+        iframe.style.display = "block";
+        msg.style.display = "none";
+
+        // Ajuste dinámico por tipo de plataforma
+        if (link.includes("lookerstudio.google.com")) {
+          iframe.style.width = "100vw";
+          iframe.style.height = "calc(100vh - 50px)";
+          iframe.setAttribute("scrolling", "no");
+        } else if (link.includes("app.powerbi.com")) {
+          iframe.style.width = "100vw";
+          iframe.style.height = "calc(100vh - 50px)";
+        } else {
+          iframe.style.width = "100%";
+          iframe.style.height = "calc(100% - 50px)";
+        }
       } else {
-        iframe.src = "about:blank";
+        iframe.style.display = "none";
+        msg.style.display = "flex";
       }
     }
 
