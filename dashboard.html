@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* 🚫 Sin scroll en toda la página */
+      overflow: hidden;
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
     }
@@ -63,8 +63,8 @@
       position: absolute;
       top: 50px; /* debajo del header */
       left: 0;
-      width: 100%;
-      height: calc(100% - 50px);
+      width: 100vw;
+      height: calc(100vh - 50px);
       border: none;
       overflow: hidden;
       display: none;
@@ -72,33 +72,20 @@
 
     /* ===== Ajuste especial Looker Studio ===== */
     iframe[src*="lookerstudio.google.com"] {
+      display: block;
+      width: 100vw; /* ocupa todo el ancho */
+      height: calc(100vh - 50px);
+      border: none;
+      overflow: hidden;
       background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    /* ===== Contenedor de Looker para mantener proporción ===== */
-    .looker-wrapper {
-      position: absolute;
-      top: 50px;
-      left: 0;
+    /* ===== Ajuste Power BI ===== */
+    iframe[src*="app.powerbi.com"] {
+      display: block;
       width: 100vw;
       height: calc(100vh - 50px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #000;
-      overflow: hidden;
-    }
-
-    .looker-frame {
-      width: 1366px;    /* base de 16:9 */
-      height: 768px;    /* base de 16:9 */
-      max-width: 100%;
-      max-height: calc(100vh - 50px);
       border: none;
-      transform-origin: center center;
     }
 
     /* Mensaje por si no hay enlace */
@@ -121,56 +108,38 @@
     <button onclick="logout()">Cerrar Sesión</button>
   </header>
 
-  <div id="lookerWrapper" class="looker-wrapper" style="display:none;">
-    <iframe id="lookerFrame" class="looker-frame" scrolling="no"></iframe>
-  </div>
-
-  <iframe id="dashboardFrame"></iframe>
+  <iframe id="dashboardFrame" scrolling="no"></iframe>
   <div id="noDashboardMsg" class="no-dashboard" style="display:none;">
     No se ha cargado ningún dashboard.
   </div>
 
   <script>
-    // Verificación de sesión
     if (sessionStorage.getItem("loggedIn") !== "true") {
       window.location.href = "index.html";
     } else {
       const link = sessionStorage.getItem("dashboardLink");
       const iframe = document.getElementById("dashboardFrame");
-      const lookerWrapper = document.getElementById("lookerWrapper");
-      const lookerFrame = document.getElementById("lookerFrame");
       const msg = document.getElementById("noDashboardMsg");
 
       if (link) {
+        iframe.src = link;
+        iframe.style.display = "block";
         msg.style.display = "none";
 
+        // Configuración dinámica
         if (link.includes("lookerstudio.google.com")) {
-          iframe.style.display = "none";
-          lookerWrapper.style.display = "flex";
-          lookerFrame.src = link;
-
-          // 🔧 Ajuste automático de escala según ventana
-          function resizeLooker() {
-            const scaleX = window.innerWidth / 1366;
-            const scaleY = (window.innerHeight - 50) / 768;
-            const scale = Math.min(scaleX, scaleY);
-            lookerFrame.style.transform = `scale(${scale})`;
-          }
-
-          window.addEventListener("resize", resizeLooker);
-          resizeLooker();
-
-        } else {
-          // Para Power BI u otros
-          lookerWrapper.style.display = "none";
-          iframe.style.display = "block";
-          iframe.src = link;
           iframe.style.width = "100vw";
           iframe.style.height = "calc(100vh - 50px)";
+          iframe.setAttribute("scrolling", "no");
+        } else if (link.includes("app.powerbi.com")) {
+          iframe.style.width = "100vw";
+          iframe.style.height = "calc(100vh - 50px)";
+        } else {
+          iframe.style.width = "100%";
+          iframe.style.height = "calc(100% - 50px)";
         }
       } else {
         iframe.style.display = "none";
-        lookerWrapper.style.display = "none";
         msg.style.display = "flex";
       }
     }
@@ -183,4 +152,3 @@
   </script>
 </body>
 </html>
-
